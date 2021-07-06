@@ -108,6 +108,41 @@ optional arguments:
                         storage type for the data database
 ```
 
+# Example Output
+```json
+./pgacloud.py --debug rds get-vpcs
+[11:24:57]: Retrieving VPC information...
+{
+    "vpcs": [
+        {
+            "CidrBlock": "172.31.0.0/16",
+            "DhcpOptionsId": "dopt-a6626abd",
+            "State": "available",
+            "VpcId": "vpc-6473745e",
+            "OwnerId": "869956591405",
+            "InstanceTenancy": "default",
+            "CidrBlockAssociationSet": [
+                {
+                    "AssociationId": "vpc-cidr-assoc-cb184ba7",
+                    "CidrBlock": "172.31.0.0/16",
+                    "CidrBlockState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "IsDefault": true
+        }
+    ]
+}
+```
+
+```json
+./pgacloud.py rds deploy-cluster --name foo --db-password abc123 --instance-type m3.large --storage-size 10
+{
+    "error": "An error occurred (InvalidParameterValue) when calling the CreateDBInstance operation: Invalid DB Instance class: m3.large"
+}
+```
+
 ## Licence
 
 The [PostgreSQL licence](LICENSE) of course!
