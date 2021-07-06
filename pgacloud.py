@@ -45,7 +45,7 @@ def get_args(providers):
 
     # Load the provider parsers
     for provider in providers:
-        providers[provider]._init_args(parsers)
+        providers[provider].init_args(parsers)
 
     args = parser.parse_args()
 
@@ -63,7 +63,7 @@ def execute_command(providers, parser, args):
     # Figure out what provider the command was for (if any) and call the
     # relevant function. If we don't get a match, print the help
     if args.provider in providers and args.command is not None:
-        command = providers[args.provider]._commands()[args.command]
+        command = providers[args.provider].commands()[args.command]
         command(args)
     else:
         # If no provider has been given, display the top level help,
@@ -71,7 +71,7 @@ def execute_command(providers, parser, args):
         if args.provider is None:
             parser.print_help()
         else:
-            command = providers[args.provider]._commands()['help']
+            command = providers[args.provider].commands()['help']
             command()
 
 

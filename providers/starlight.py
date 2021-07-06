@@ -13,7 +13,7 @@ from providers._abstract import AbsProvider
 
 
 class StarlightProvider(AbsProvider):
-    def _init_args(self, parsers):
+    def init_args(self, parsers):
         """ Create the command line parser for this provider """
         self.parser = parsers.add_parser('starlight', help='EDB Starlight')
 
@@ -33,12 +33,12 @@ class StarlightProvider(AbsProvider):
         parser_types = parsers.add_parser('list-types',
                                           help='list available instance types')
 
-    def deploy_cluster(self, args):
+    def cmd_deploy_cluster(self, args):
         print(
             'Deploying Starlight Cluster "{}" using instance type {}...'.format(
                 args.name, args.type))
 
-    def list_types(self, args):
+    def cmd_list_types(self, args):
         print('Listing Starlight Types...')
 
 

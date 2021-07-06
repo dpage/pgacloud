@@ -11,20 +11,20 @@ class AbsProvider:
     """ Abstract provider """
     parser = None
 
-    def _init_args(self, parsers):
+    def init_args(self, parsers):
         pass
 
-    def _commands(self):
+    def commands(self):
         """ Get the list of commands for the current provider. """
-        attrs = filter(lambda attr: not attr.startswith('_'), dir(self))
+        attrs = filter(lambda attr: attr.startswith('cmd_'), dir(self))
         commands = {}
 
         for attr in attrs:
             method = getattr(self, attr)
-            commands[attr] = method
+            commands[attr[4:]] = method
 
         return commands
 
-    def help(self):
+    def cmd_help(self):
         """ Prints the provider level help """
         self.parser.print_help()

@@ -46,7 +46,7 @@ class RdsProvider(AbsProvider):
         self._default_region = config.get('default', 'region',
                                           fallback='us-east-1')
 
-    def _init_args(self, parsers):
+    def init_args(self, parsers):
         """ Create the command line parser for this provider """
         self.parser = parsers.add_parser('rds',
                                          help='Amazon AWS RDS PostgreSQL',
@@ -302,7 +302,7 @@ class RdsProvider(AbsProvider):
     ##########################################################################
     # User commands
     ##########################################################################
-    def deploy_cluster(self, args):
+    def cmd_deploy_cluster(self, args):
         """ Deploy and RDS cluster and security group """
         data = {}
 
@@ -314,23 +314,24 @@ class RdsProvider(AbsProvider):
 
         output(data)
 
-    def get_clusters(self, args):
+    def cmd_get_clusters(self, args):
         """ Describe all Postgres instances """
         data = self._get_clusters(args)
 
         output({'clusters': data})
 
-    def get_vpcs(self, args):
+    def cmd_get_vpcs(self, args):
         """ Describe all VPCs """
         data = self._get_vpcs(args)
 
         output({'vpcs': data})
 
-    def get_instance_types(self, args):
+    def cmd_get_instance_types(self, args):
         """ Describe all instance types """
         data = self._get_instance_types(args)
 
         output({'instance-types': data})
+
 
 def load():
     """ Loads the current provider """
