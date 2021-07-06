@@ -21,7 +21,7 @@ log messages to be output on stderr.
 
 The utility has a pluggable architecture, allowing 'providers' to be written for
 different cloud environments and then dropped into the 
-[plugins directory](plugins).
+[plugins directory](/../../plugins).
 
 Any Python file in the plugins directory that has a name ending in '.py' and NOT
 beginning with an underscore is treated as a plugin and will be dynamically
