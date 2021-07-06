@@ -21,14 +21,14 @@ log messages to be output on stderr.
 
 The utility has a pluggable architecture, allowing 'providers' to be written for
 different cloud environments and then dropped into the 
-[plugins directory](providers).
+[providers directory](providers).
 
 Any Python file in the plugins directory that has a name ending in '.py' and NOT
 beginning with an underscore is treated as a plugin and will be dynamically
 loaded.
 
 Plugins are implemented as classes derived from the AbsProvider class in
-[plugins/_abstract.py](plugins/_abstract.py). In addition to the plugin class 
+[providers/_abstract.py](providers/_abstract.py). In addition to the plugin class 
 that must be defined, a *load()* function must be included which simply returns
 and instance of the class, for example:
 
@@ -48,8 +48,8 @@ The provider class implementation has two requirements:
    *deploy-cluster* will cause the function ```cmd_deploy_cluster(self, args)``` 
    to be called.
    
-See [plugins/rds.py](plugins/rds.py) for a comprehensive example, and 
-[plugins/starlight.py](plugins/starlight.py)
+See [providers/rds.py](providers/rds.py) for a comprehensive example, and 
+[providers/starlight.py](providers/starlight.py)
 
 ## Usage
 
@@ -107,3 +107,7 @@ optional arguments:
   --storage-type STORAGE_TYPE
                         storage type for the data database
 ```
+
+## Licence
+
+The [PostgreSQL licence](LICENSE) of course!
