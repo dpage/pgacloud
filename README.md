@@ -1,8 +1,8 @@
 # pgacloud
 
-This directory contains the *pgacloud* utility. This is a command line tool that
-pgAdmin can use to deploy PostgreSQL instances in cloud environments through the
-external process infrastructure. 
+This directory contains the *pgacloud* utility. This is a *Proof of Concept* 
+command line tool that pgAdmin can use to deploy PostgreSQL instances in cloud 
+environments through the external process infrastructure. 
 
 The utility takes a cloud provider name as the first argument, and then one or 
 more non-positional options that define a cloud instances of PostgreSQL. It will
