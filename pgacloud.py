@@ -62,7 +62,9 @@ def execute_command(providers, parser, args):
 
     # Figure out what provider the command was for (if any) and call the
     # relevant function. If we don't get a match, print the help
-    if args.provider in providers and args.command is not None:
+    if args.provider in providers and \
+            'command' in args and \
+            args.command is not None:
         command = providers[args.provider].commands()[args.command]
         command(args)
     else:
