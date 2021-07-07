@@ -51,6 +51,25 @@ The provider class implementation has two requirements:
 See [providers/rds.py](providers/rds.py) for a comprehensive example, and 
 [providers/starlight.py](providers/starlight.py)
 
+## Provider Authentication
+
+### Amazon RDS
+
+Authentication with RDS uses an access key. This will be read from 
+~/.aws/credentials (the file used by the AWS CLI), however values can be 
+overridden by setting the *AWS_ACCESS_KEY_ID* and *AWS_SECRET_ACCESS_KEY*
+environment variables.
+
+To create an access key, open the IAM management interface in the AWS console,
+click on the relevant user ID, and then select the *Security Credentials* tab, 
+and then click the *Create access key* button.
+
+### Microsoft Azure
+
+Setting up authentication in Azure is somewhat more complex than AWS. See the
+[Microsoft Docs](https://docs.microsoft.com/en-us/azure/developer/python/configure-local-development-environment?tabs=cmd)
+for more information.
+
 ## Usage
 
 [Subject to change - for illustrative purposes only]
