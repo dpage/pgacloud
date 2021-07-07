@@ -64,7 +64,7 @@ class RdsProvider(AbsProvider):
                                  help='name of the AWS region')
 
         # Create the command sub-parser
-        parsers = self.parser.add_subparsers(help='RDS command help',
+        parsers = self.parser.add_subparsers(help='RDS commands',
                                              dest='command')
 
         # Create the deploy cluster command parser
