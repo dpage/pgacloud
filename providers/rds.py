@@ -14,6 +14,7 @@ import os
 import time
 
 import boto3
+
 from providers._abstract import AbsProvider
 from utils.io import debug, error, output
 from utils.misc import get_my_ip, get_random_id
@@ -69,28 +70,34 @@ class RdsProvider(AbsProvider):
                                              dest='command')
 
         # Create the create instance command parser
-        parser_deploy = parsers.add_parser('create-instance',
-                                           help='create a new instance')
-        parser_deploy.add_argument('--name', required=True,
-                                   help='name of the instance')
-        parser_deploy.add_argument('--db-name', default='postgres',
-                                   help='name of the default database '
-                                        '(default: postgres)')
-        parser_deploy.add_argument('--db-password', required=True,
-                                   help='password for the database')
-        parser_deploy.add_argument('--db-username', default='postgres',
-                                   help='user name for the database (default: '
-                                        'postgres)')
-        parser_deploy.add_argument('--instance-type', required=True,
-                                   help='machine type for the instance nodes')
-        parser_deploy.add_argument('--storage-iops', type=int, default=0,
-                                   help='storage IOPs to allocate (default: '
-                                        '0)')
-        parser_deploy.add_argument('--storage-size', type=int, required=True,
-                                   help='storage size in GB')
-        parser_deploy.add_argument('--storage-type', default='gp2',
-                                   help='storage type for the data database '
-                                        '(default: gp2)')
+        parser_create_instance = parsers.add_parser('create-instance',
+                                                    help='create a new '
+                                                         'instance')
+        parser_create_instance.add_argument('--name', required=True,
+                                            help='name of the instance')
+        parser_create_instance.add_argument('--db-name', default='postgres',
+                                            help='name of the default '
+                                                 'database '
+                                                 '(default: postgres)')
+        parser_create_instance.add_argument('--db-password', required=True,
+                                            help='password for the database')
+        parser_create_instance.add_argument('--db-username',
+                                            default='postgres',
+                                            help='user name for the database '
+                                                 '(default: postgres)')
+        parser_create_instance.add_argument('--instance-type', required=True,
+                                            help='machine type for the '
+                                                 'instance nodes')
+        parser_create_instance.add_argument('--storage-iops', type=int,
+                                            default=0,
+                                            help='storage IOPs to allocate '
+                                                 '(default: 0)')
+        parser_create_instance.add_argument('--storage-size', type=int,
+                                            required=True,
+                                            help='storage size in GB')
+        parser_create_instance.add_argument('--storage-type', default='gp2',
+                                            help='storage type for the data '
+                                                 'database (default: gp2)')
 
     ##########################################################################
     # AWS Helper functions

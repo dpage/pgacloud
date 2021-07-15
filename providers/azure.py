@@ -9,14 +9,16 @@
 
 # Microsoft Azure PostgreSQL provider
 
-import os, sys
+import os
+import sys
 
+from azure.core.exceptions import ResourceNotFoundError
 from azure.identity import AzureCliCredential
 from azure.mgmt.rdbms.postgresql import PostgreSQLManagementClient
 from azure.mgmt.rdbms.postgresql.models import ServerForCreate, \
     ServerPropertiesForDefaultCreate, ServerVersion
 from azure.mgmt.resource import ResourceManagementClient
-from azure.core.exceptions import ResourceNotFoundError
+
 from providers._abstract import AbsProvider
 from utils.io import output, debug, error
 from utils.misc import get_my_ip, get_random_id
@@ -56,19 +58,22 @@ class AzureProvider(AbsProvider):
                                              dest='command')
 
         # Create the create instance command parser
-        parser_deploy = parsers.add_parser('create-instance',
-                                           help='create a new instance')
+        parser_create_instance = parsers.add_parser('create-instance',
+                                                    help='create a new '
+                                                         'instance')
 
-        parser_deploy.add_argument('--name', required=True,
-                                   help='name of the instance')
-        parser_deploy.add_argument('--db-name', default='postgres',
-                                   help='name of the default database '
-                                        '(default: postgres)')
-        parser_deploy.add_argument('--db-password', required=True,
-                                   help='password for the database')
-        parser_deploy.add_argument('--db-username', default='postgres',
-                                   help='user name for the database '
-                                        '(default: postgres)')
+        parser_create_instance.add_argument('--name', required=True,
+                                            help='name of the instance')
+        parser_create_instance.add_argument('--db-name', default='postgres',
+                                            help='name of the default '
+                                                 'database '
+                                                 '(default: postgres)')
+        parser_create_instance.add_argument('--db-password', required=True,
+                                            help='password for the database')
+        parser_create_instance.add_argument('--db-username',
+                                            default='postgres',
+                                            help='user name for the database '
+                                                 '(default: postgres)')
 
     ##########################################################################
     # Azure Helper functions
