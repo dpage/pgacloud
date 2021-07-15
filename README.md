@@ -4,6 +4,17 @@ This directory contains the *pgacloud* utility. This is a *Proof of Concept*
 command line tool that pgAdmin can use to deploy PostgreSQL instances in cloud 
 environments through the external process infrastructure. 
 
+## Code branches
+
+The *main* branch contains code that can form the basis of the actual utility
+that may be shipped as part of pgAdmin.
+
+The *PoC* branch contains a lot more experimental code from prior to when the 
+main branch cleanup began. Future changes to main are *not* being merged with
+the PoC branch.
+
+## Overview
+
 The utility takes a cloud provider name as the first argument, and then one or 
 more non-positional options that define a cloud instances of PostgreSQL. It will
 execute the relevant API commands to deploy the instance along with a security
