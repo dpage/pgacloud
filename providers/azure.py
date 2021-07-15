@@ -33,11 +33,20 @@ class AzureProvider(AbsProvider):
         """ Create the command line parser for this provider """
         self.parser = parsers.add_parser('azure',
                                          help='Azure Database for PostgreSQL',
-                                         epilog='Credentials...')
+                                         epilog='Credentials are read from '
+                                                'the environment, '
+                                                'specifically, the '
+                                                'AZURE_SUBSCRIPTION_ID, '
+                                                'AZURE_TENANT_ID, '
+                                                'AZURE_CLIENT_ID and '
+                                                'AZURE_CLIENT_SECRET '
+                                                'variables. '
+                                                'See https://docs.microsoft.com/en-us/azure/developer/python/configure-local-development-environment?tabs=cmd '
+                                                'for more information.')
 
         self.parser.add_argument('--region', default=self._default_region,
                                  help='name of the Azure location (default: '
-                                      '{}'.format(self._default_region))
+                                      '{})'.format(self._default_region))
 
         self.parser.add_argument('--resource-group', required=True,
                                  help='name of the Azure resource group')
