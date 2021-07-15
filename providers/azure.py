@@ -16,7 +16,7 @@ from azure.mgmt.rdbms.postgresql import PostgreSQLManagementClient
 from azure.mgmt.rdbms.postgresql.models import ServerForCreate, \
     ServerPropertiesForDefaultCreate, ServerVersion
 from azure.mgmt.resource import ResourceManagementClient
-
+from azure.core.exceptions import ResourceNotFoundError
 from providers._abstract import AbsProvider
 from utils.io import output, debug, error
 from utils.misc import get_my_ip, get_random_id
@@ -118,6 +118,19 @@ class AzureProvider(AbsProvider):
     def _create_azure_instance(self, args):
         # Obtain the management client object
         postgresql_client = self._get_azure_client('postgresql')
+
+        # Check if the server already exists
+        svr = None
+        try:
+            svr = postgresql_client.servers.get(args.resource_group, args.name)
+        except ResourceNotFoundError:
+            pass
+        except Exception as e:
+            error(args, e)
+
+        if svr is not None:
+            error(args, 'Azure Database for PostgreSQL instance {} already '
+                        'exists.'.format(args.name))
 
         # Provision the server and wait for the result
         debug(args, 'Creating Azure instance: {}...'.format(args.name))
