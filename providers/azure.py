@@ -86,6 +86,12 @@ class AzureProvider(AbsProvider):
                                             required=True,
                                             help='storage size in GB')
 
+        # Create the delete instance command parser
+        parser_delete_instance = parsers.add_parser('delete-instance',
+                                                    help='delete an instance')
+        parser_delete_instance.add_argument('--name', required=True,
+                                            help='name of the instance')
+
     ##########################################################################
     # Azure Helper functions
     ##########################################################################
@@ -197,6 +203,24 @@ class AzureProvider(AbsProvider):
 
         return firewall_rule.__dict__
 
+    def _delete_azure_instance(self, args, name):
+        """ Delete an Azure instance """
+        # Obtain the management client object
+        postgresql_client = self._get_azure_client('postgresql')
+
+        # Delete the server and wait for the result
+        debug(args, 'Deleting Azure instance: {}...'.format(args.name))
+        try:
+            poller = postgresql_client.servers.begin_delete(
+                args.resource_group,
+                args.name
+            )
+        except Exception as e:
+            error(args, e)
+
+        poller.result()
+
+
     ##########################################################################
     # User commands
     ##########################################################################
@@ -218,6 +242,10 @@ class AzureProvider(AbsProvider):
         }
 
         output(data)
+
+    def cmd_delete_instance(self, args):
+        """ Delete an Azure instance """
+        self._delete_azure_instance(args, args.name)
 
 
 def load():
