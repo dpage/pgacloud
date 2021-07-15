@@ -87,16 +87,6 @@ class RdsProvider(AbsProvider):
         parser_deploy.add_argument('--storage-type', default='gp2',
                                    help='storage type for the data database')
 
-        # Create the get cluster command parser
-        parsers.add_parser('get-clusters', help='get information on clusters')
-
-        # Create the get VPCs command parser
-        parsers.add_parser('get-vpcs', help='get information on VPCs')
-
-        # Create the get instance types command parser
-        parsers.add_parser('get-instance-types', help='get information on '
-                                                      'available instance '
-                                                      'types')
 
     ##########################################################################
     # AWS Helper functions
@@ -236,69 +226,6 @@ class RdsProvider(AbsProvider):
 
         return response['DBInstances']
 
-    def _get_clusters(self, args):
-        """ Describe RDS instances """
-        rds = self._get_aws_client('rds', args)
-
-        data = []
-        try:
-            debug(args,
-                  'Retrieving instance information...')
-            paginator = rds.get_paginator('describe_db_instances')
-            page_iterator = paginator.paginate(Filters=[
-                {
-                    'Name': 'engine',
-                    'Values': [
-                        'postgres',
-                    ]
-                },
-            ]
-            )
-
-            for page in page_iterator:
-                data.extend(page['DBInstances'])
-        except Exception as e:
-            error(args, e)
-
-        return data
-
-    def _get_vpcs(self, args):
-        """ Describe VPCs """
-        ec2 = self._get_aws_client('ec2', args)
-
-        data = []
-        try:
-            debug(args,
-                  'Retrieving VPC information...')
-            paginator = ec2.get_paginator('describe_vpcs')
-            page_iterator = paginator.paginate()
-
-            for page in page_iterator:
-                data.extend(page['Vpcs'])
-        except Exception as e:
-            error(args, e)
-
-        return data
-
-    def _get_instance_types(self, args):
-        """ Describe instance types """
-        pricing = self._get_aws_client('pricing', args)
-
-        data = []
-        try:
-            debug(args,
-                  'Retrieving instance type information...')
-            paginator = pricing.get_paginator('get_attribute_values')
-            page_iterator = paginator.paginate(ServiceCode='AmazonRDS', AttributeName='instanceType')
-
-            for page in page_iterator:
-                for value in page['AttributeValues']:
-                    data.append(value['Value'])
-        except Exception as e:
-            error(args, e)
-
-        return data
-
     ##########################################################################
     # User commands
     ##########################################################################
@@ -313,24 +240,6 @@ class RdsProvider(AbsProvider):
         data['clusters'] = self._create_rds_instance(args, security_group)
 
         output(data)
-
-    def cmd_get_clusters(self, args):
-        """ Describe all Postgres instances """
-        data = self._get_clusters(args)
-
-        output({'clusters': data})
-
-    def cmd_get_vpcs(self, args):
-        """ Describe all VPCs """
-        data = self._get_vpcs(args)
-
-        output({'vpcs': data})
-
-    def cmd_get_instance_types(self, args):
-        """ Describe all instance types """
-        data = self._get_instance_types(args)
-
-        output({'instance-types': data})
 
 
 def load():
