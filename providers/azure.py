@@ -36,7 +36,8 @@ class AzureProvider(AbsProvider):
                                          epilog='Credentials...')
 
         self.parser.add_argument('--region', default=self._default_region,
-                                 help='name of the Azure location')
+                                 help='name of the Azure location (default: '
+                                      '{}'.format(self._default_region))
 
         self.parser.add_argument('--resource-group', required=True,
                                  help='name of the Azure resource group')
@@ -52,11 +53,13 @@ class AzureProvider(AbsProvider):
         parser_deploy.add_argument('--name', required=True,
                                    help='name of the instance')
         parser_deploy.add_argument('--db-name', default='postgres',
-                                   help='name of the default database')
+                                   help='name of the default database '
+                                        '(default: postgres)')
         parser_deploy.add_argument('--db-password', required=True,
                                    help='password for the database')
         parser_deploy.add_argument('--db-username', default='postgres',
-                                   help='user name for the database')
+                                   help='user name for the database '
+                                        '(default: postgres)')
 
     ##########################################################################
     # Azure Helper functions

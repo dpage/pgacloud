@@ -73,19 +73,23 @@ class RdsProvider(AbsProvider):
         parser_deploy.add_argument('--name', required=True,
                                    help='name of the instance')
         parser_deploy.add_argument('--db-name', default='postgres',
-                                   help='name of the default database')
+                                   help='name of the default database '
+                                        '(default: postgres)')
         parser_deploy.add_argument('--db-password', required=True,
                                    help='password for the database')
         parser_deploy.add_argument('--db-username', default='postgres',
-                                   help='user name for the database')
+                                   help='user name for the database (default: '
+                                        'postgres)')
         parser_deploy.add_argument('--instance-type', required=True,
                                    help='machine type for the instance nodes')
         parser_deploy.add_argument('--storage-iops', type=int, default=0,
-                                   help='storage IOPs to allocate')
+                                   help='storage IOPs to allocate (default: '
+                                        '0)')
         parser_deploy.add_argument('--storage-size', type=int, required=True,
                                    help='storage size in GB')
         parser_deploy.add_argument('--storage-type', default='gp2',
-                                   help='storage type for the data database')
+                                   help='storage type for the data database '
+                                        '(default: gp2)')
 
     ##########################################################################
     # AWS Helper functions
