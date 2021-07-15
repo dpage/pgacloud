@@ -67,11 +67,11 @@ class RdsProvider(AbsProvider):
         parsers = self.parser.add_subparsers(help='RDS commands',
                                              dest='command')
 
-        # Create the deploy cluster command parser
-        parser_deploy = parsers.add_parser('deploy-cluster',
-                                           help='deploy a new cluster')
+        # Create the create instance command parser
+        parser_deploy = parsers.add_parser('create-instance',
+                                           help='create a new instance')
         parser_deploy.add_argument('--name', required=True,
-                                   help='name of the cluster')
+                                   help='name of the instance')
         parser_deploy.add_argument('--db-name', default='postgres',
                                    help='name of the default database')
         parser_deploy.add_argument('--db-password', required=True,
@@ -79,14 +79,13 @@ class RdsProvider(AbsProvider):
         parser_deploy.add_argument('--db-username', default='postgres',
                                    help='user name for the database')
         parser_deploy.add_argument('--instance-type', required=True,
-                                   help='machine type for the cluster nodes')
+                                   help='machine type for the instance nodes')
         parser_deploy.add_argument('--storage-iops', type=int, default=0,
                                    help='storage IOPs to allocate')
         parser_deploy.add_argument('--storage-size', type=int, required=True,
                                    help='storage size in GB')
         parser_deploy.add_argument('--storage-type', default='gp2',
                                    help='storage type for the data database')
-
 
     ##########################################################################
     # AWS Helper functions
@@ -229,8 +228,8 @@ class RdsProvider(AbsProvider):
     ##########################################################################
     # User commands
     ##########################################################################
-    def cmd_deploy_cluster(self, args):
-        """ Deploy and RDS cluster and security group """
+    def cmd_create_instance(self, args):
+        """ Deploy and RDS instance and security group """
         data = {}
 
         security_group = self._create_security_group(args)
