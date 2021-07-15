@@ -16,7 +16,7 @@ from azure.core.exceptions import ResourceNotFoundError
 from azure.identity import AzureCliCredential
 from azure.mgmt.rdbms.postgresql import PostgreSQLManagementClient
 from azure.mgmt.rdbms.postgresql.models import ServerForCreate, \
-    ServerPropertiesForDefaultCreate, ServerVersion
+    ServerPropertiesForDefaultCreate, Sku, StorageProfile
 from azure.mgmt.resource import ResourceManagementClient
 
 from providers._abstract import AbsProvider
@@ -74,6 +74,17 @@ class AzureProvider(AbsProvider):
                                             default='postgres',
                                             help='user name for the database '
                                                  '(default: postgres)')
+        parser_create_instance.add_argument('--db-major-version',
+                                            default=11, type=int,
+                                            help='major version of PostgreSQL '
+                                                 'to deploy (default: 11)')
+        parser_create_instance.add_argument('--instance-type', required=True,
+                                            help='machine type for the '
+                                                 'instance nodes, e.g. '
+                                                 'GP_Gen5_8')
+        parser_create_instance.add_argument('--storage-size', type=int,
+                                            required=True,
+                                            help='storage size in GB')
 
     ##########################################################################
     # Azure Helper functions
@@ -148,8 +159,12 @@ class AzureProvider(AbsProvider):
                     properties=ServerPropertiesForDefaultCreate(
                         administrator_login=args.db_username,
                         administrator_login_password=args.db_password,
-                        version=ServerVersion.ELEVEN
-                    )
+                        version=str(args.db_major_version),
+                        storage_profile=StorageProfile(
+                            storage_mb=args.storage_size * 1024,
+                            storage_autogrow='Enabled')
+                    ),
+                    sku=Sku(name=args.instance_type)
                 )
             )
         except Exception as e:

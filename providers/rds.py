@@ -85,9 +85,14 @@ class RdsProvider(AbsProvider):
                                             default='postgres',
                                             help='user name for the database '
                                                  '(default: postgres)')
+        parser_create_instance.add_argument('--db-major-version',
+                                            default=13, type=int,
+                                            help='major version of PostgreSQL '
+                                                 'to deploy (default: 13)')
         parser_create_instance.add_argument('--instance-type', required=True,
                                             help='machine type for the '
-                                                 'instance nodes')
+                                                 'instance nodes, e.g. '
+                                                 'db.m3.large')
         parser_create_instance.add_argument('--storage-iops', type=int,
                                             default=0,
                                             help='storage IOPs to allocate '
@@ -175,6 +180,7 @@ class RdsProvider(AbsProvider):
                                    AllocatedStorage=args.storage_size,
                                    DBName=args.db_name,
                                    Engine='postgres',
+                                   EngineVersion=str(args.db_major_version),
                                    StorageType=args.storage_type,
                                    StorageEncrypted=True,
                                    Iops=args.storage_iops,
