@@ -106,8 +106,7 @@ class RdsProvider(AbsProvider):
 
         # Create the delete instance command parser
         parser_delete_instance = parsers.add_parser('delete-instance',
-                                                    help='delete an new '
-                                                         'instance')
+                                                    help='delete an instance')
         parser_delete_instance.add_argument('--name', required=True,
                                             help='name of the instance')
         parser_delete_instance.add_argument('--security-group',
