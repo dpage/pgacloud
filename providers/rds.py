@@ -105,7 +105,7 @@ class RdsProvider(AbsProvider):
         return self._clients['type']
 
     def _create_security_group(self, args):
-        """ Create a new security group for the cluster """
+        """ Create a new security group for the instance """
         ec2 = self._get_aws_client('ec2', args)
         ip = get_my_ip()
 
@@ -117,7 +117,7 @@ class RdsProvider(AbsProvider):
             debug(args,
                   'Creating security group with name: {}...'.format(name))
             response = ec2.create_security_group(
-                Description='Inbound access for {} to RDS cluster {}'.format(
+                Description='Inbound access for {} to RDS instance {}'.format(
                     ip, args.name),
                 GroupName=name
             )
@@ -236,7 +236,7 @@ class RdsProvider(AbsProvider):
         self._add_ingress_rule(args, security_group)
         data['security_groups'] = self._get_security_group(args,
                                                            security_group)
-        data['clusters'] = self._create_rds_instance(args, security_group)
+        data['instances'] = self._create_rds_instance(args, security_group)
 
         output(data)
 

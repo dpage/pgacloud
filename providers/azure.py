@@ -45,12 +45,12 @@ class AzureProvider(AbsProvider):
         parsers = self.parser.add_subparsers(help='Azure commands',
                                              dest='command')
 
-        # Create the deploy cluster command parser
-        parser_deploy = parsers.add_parser('deploy-cluster',
-                                           help='deploy a new cluster')
+        # Create the create instance command parser
+        parser_deploy = parsers.add_parser('create-instance',
+                                           help='create a new instance')
 
         parser_deploy.add_argument('--name', required=True,
-                                   help='name of the cluster')
+                                   help='name of the instance')
         parser_deploy.add_argument('--db-name', default='postgres',
                                    help='name of the default database')
         parser_deploy.add_argument('--db-password', required=True,
@@ -152,12 +152,12 @@ class AzureProvider(AbsProvider):
     ##########################################################################
     # User commands
     ##########################################################################
-    def cmd_deploy_cluster(self, args):
-        """ Deploy an Azure cluster and firewall rule """
+    def cmd_create_instance(self, args):
+        """ Deploy an Azure instance and firewall rule """
         data = {}
 
         data['resource_groups'] = self._create_resource_group(args)
-        data['clusters'] = self._create_azure_instance(args)
+        data['instances'] = self._create_azure_instance(args)
         data['firewall_rules'] = self._create_firewall_rule(args)
 
         output(data)
