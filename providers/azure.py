@@ -120,6 +120,7 @@ class AzureProvider(AbsProvider):
         return self._clients['type']
 
     def _create_resource_group(self, args):
+        """ Create the Resource Group if it doesn't exist """
         resource_client = self._get_azure_client('resource')
 
         debug(args,
@@ -132,6 +133,7 @@ class AzureProvider(AbsProvider):
         return result.__dict__
 
     def _create_azure_instance(self, args):
+        """ Create an Azure instance """
         # Obtain the management client object
         postgresql_client = self._get_azure_client('postgresql')
 
@@ -175,6 +177,7 @@ class AzureProvider(AbsProvider):
         return server.__dict__
 
     def _create_firewall_rule(self, args):
+        """ Create a firewall rule on an instance """
         postgresql_client = self._get_azure_client('postgresql')
         ip = get_my_ip()
 
