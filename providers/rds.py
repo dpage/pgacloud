@@ -104,7 +104,7 @@ class RdsProvider(AbsProvider):
                                             help='storage type for the data '
                                                  'database (default: gp2)')
 
-        # Create the create instance command parser
+        # Create the delete instance command parser
         parser_delete_instance = parsers.add_parser('delete-instance',
                                                     help='delete an new '
                                                          'instance')
