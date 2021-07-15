@@ -75,8 +75,8 @@ class AzureProvider(AbsProvider):
                                             help='user name for the database '
                                                  '(default: postgres)')
         parser_create_instance.add_argument('--db-major-version',
-                                            default=11, type=int,
-                                            help='major version of PostgreSQL '
+                                            default='11',
+                                            help='version of PostgreSQL '
                                                  'to deploy (default: 11)')
         parser_create_instance.add_argument('--instance-type', required=True,
                                             help='machine type for the '
@@ -159,7 +159,7 @@ class AzureProvider(AbsProvider):
                     properties=ServerPropertiesForDefaultCreate(
                         administrator_login=args.db_username,
                         administrator_login_password=args.db_password,
-                        version=str(args.db_major_version),
+                        version=args.db_major_version,
                         storage_profile=StorageProfile(
                             storage_mb=args.storage_size * 1024,
                             storage_autogrow='Enabled')
