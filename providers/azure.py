@@ -25,18 +25,9 @@ from utils.misc import get_my_ip, get_random_id
 class AzureProvider(AbsProvider):
     def __init__(self):
         self._clients = {}
-
+        self._credentials = None
+        self._subscription_id = None
         self._default_region = 'westeurope'
-
-        # Acquire a credential object using CLI-based authentication.
-        self._credentials = AzureCliCredential()
-
-        # Retrieve subscription ID from environment variable
-        try:
-            self._subscription_id = os.environ["AZURE_SUBSCRIPTION_ID"]
-        except KeyError as e:
-            print('The environment variable AZURE_SUBSCRIPTION_ID is not set')
-            sys.exit(1)
 
     def init_args(self, parsers):
         """ Create the command line parser for this provider """
@@ -73,6 +64,19 @@ class AzureProvider(AbsProvider):
 
     def _get_azure_client(self, type):
         """ Create/cache/return an Azure client object """
+        # Acquire a credential object using CLI-based authentication.
+        if self._credentials is None:
+            self._credentials = AzureCliCredential()
+
+        # Retrieve subscription ID from environment variable
+        if self._subscription_id is None:
+            try:
+                self._subscription_id = os.environ["AZURE_SUBSCRIPTION_ID"]
+            except KeyError as e:
+                print('The environment variable AZURE_SUBSCRIPTION_ID is not '
+                      'set')
+                sys.exit(1)
+
         if type in self._clients:
             return self._clients[type]
 
