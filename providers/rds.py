@@ -104,6 +104,16 @@ class RdsProvider(AbsProvider):
                                             help='storage type for the data '
                                                  'database (default: gp2)')
 
+        # Create the create instance command parser
+        parser_delete_instance = parsers.add_parser('delete-instance',
+                                                    help='delete an new '
+                                                         'instance')
+        parser_delete_instance.add_argument('--name', required=True,
+                                            help='name of the instance')
+        parser_delete_instance.add_argument('--security-group',
+                                            help='name of a security group to'
+                                                 'delete as well')
+
     ##########################################################################
     # AWS Helper functions
     ##########################################################################
@@ -223,17 +233,52 @@ class RdsProvider(AbsProvider):
                 running = False
 
             if running:
-                time.sleep(30)
+                time.sleep(5)
 
         return response['DBInstances']
+
+    def _delete_rds_instance(self, args, name):
+        """ Delete an RDS instance """
+        rds = self._get_aws_client('rds', args)
+
+        debug(args, 'Deleting RDS instance: {}...'.format(name))
+        try:
+            rds.delete_db_instance(
+                DBInstanceIdentifier=name,
+                SkipFinalSnapshot=True,
+                DeleteAutomatedBackups=True
+            )
+        except Exception as e:
+            error(args, e)
+
+        # Wait for completion
+        while True:
+            try:
+                rds.describe_db_instances(DBInstanceIdentifier=args.name)
+            except rds.exceptions.DBInstanceNotFoundFault:
+                return
+            except Exception as e:
+                error(args, e)
+
+            time.sleep(5)
+
+    def _delete_security_group(self, args, id):
+        """ Delete a security group """
+        ec2 = self._get_aws_client('ec2', args)
+
+        debug(args, 'Deleting security group: {}...'.format(id))
+        try:
+            ec2.delete_security_group(
+                GroupId=id
+            )
+        except Exception as e:
+            error(args, e)
 
     ##########################################################################
     # User commands
     ##########################################################################
     def cmd_create_instance(self, args):
-        """ Deploy and RDS instance and security group """
-        data = {}
-
+        """ Create an RDS instance and security group """
         security_group = self._create_security_group(args)
         self._add_ingress_rule(args, security_group)
         instance = self._create_rds_instance(args, security_group)
@@ -248,6 +293,13 @@ class RdsProvider(AbsProvider):
                 }
 
         output(data)
+
+    def cmd_delete_instance(self, args):
+        """ Delete an RDS instance and (optionally) a security group """
+        self._delete_rds_instance(args, args.name)
+
+        if args.security_group is not None:
+            self._delete_security_group(args, args.security_group)
 
 
 def load():
