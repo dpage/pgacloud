@@ -104,7 +104,7 @@ class AzureProvider(AbsProvider):
             args.resource_group,
             {"location": args.region})
 
-        return [result.__dict__]
+        return result.__dict__
 
     def _create_azure_instance(self, args):
         # Obtain the management client object
@@ -130,7 +130,7 @@ class AzureProvider(AbsProvider):
 
         server = poller.result()
 
-        return [server.__dict__]
+        return server.__dict__
 
     def _create_firewall_rule(self, args):
         postgresql_client = self._get_azure_client('postgresql')
@@ -150,18 +150,27 @@ class AzureProvider(AbsProvider):
 
         firewall_rule = poller.result()
 
-        return [firewall_rule.__dict__]
+        return firewall_rule.__dict__
 
     ##########################################################################
     # User commands
     ##########################################################################
     def cmd_create_instance(self, args):
         """ Deploy an Azure instance and firewall rule """
-        data = {}
+        rg = self._create_resource_group(args)
+        instance = self._create_azure_instance(args)
+        fw = self._create_firewall_rule(args)
 
-        data['resource_groups'] = self._create_resource_group(args)
-        data['instances'] = self._create_azure_instance(args)
-        data['firewall_rules'] = self._create_firewall_rule(args)
+        data = {
+            'Id': instance['id'],
+            'ResourceGroupId': rg['name'],
+            'FirewallRuleId': fw['id'],
+            'Location': instance['location'],
+            'Hostname': instance['fully_qualified_domain_name'],
+            'Port': 5432,
+            'Database': "postgres",
+            'Username': instance['administrator_login']
+        }
 
         output(data)
 

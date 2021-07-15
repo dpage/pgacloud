@@ -100,15 +100,12 @@ optional arguments:
 ```
 ```shell
 ./pgacloud.py rds --help
-usage: pgacloud.py rds [-h] [--region REGION] {deploy-cluster,get-clusters,get-vpcs,get-instance-types} ...
+usage: pgacloud.py rds [-h] [--region REGION] {create-instance} ...
 
 positional arguments:
-  {deploy-cluster,get-clusters,get-vpcs,get-instance-types}
+  {deploy-cluster}
                         RDS command help
-    deploy-cluster      deploy a new cluster
-    get-clusters        get information on clusters
-    get-vpcs            get information on VPCs
-    get-instance-types  get information on available instance types
+    create-instance     create a new instance
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -117,57 +114,48 @@ optional arguments:
 Credentials are read from ~/.aws/config by default and can be overridden in the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables. The default region is read from ~/.aws/config and will fall back to us-east-1 if not present.
 ```
 ```shell
-./pgacloud.py rds deploy-cluster --help
-usage: pgacloud.py rds deploy-cluster [-h] --name NAME [--db-name DB_NAME] --db-password DB_PASSWORD [--db-username DB_USERNAME] --instance-type INSTANCE_TYPE [--storage-iops STORAGE_IOPS] --storage-size STORAGE_SIZE [--storage-type STORAGE_TYPE]
+./pgacloud.py rds create-instance --help
+usage: pgacloud.py rds create-instance [-h] --name NAME [--db-name DB_NAME] --db-password DB_PASSWORD [--db-username DB_USERNAME] --instance-type INSTANCE_TYPE [--storage-iops STORAGE_IOPS] --storage-size STORAGE_SIZE [--storage-type STORAGE_TYPE]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --name NAME           name of the cluster
-  --db-name DB_NAME     name of the default database
+  --name NAME           name of the instance
+  --db-name DB_NAME     name of the default database (default: postgres)
   --db-password DB_PASSWORD
                         password for the database
   --db-username DB_USERNAME
-                        user name for the database
+                        user name for the database (default: postgres)
   --instance-type INSTANCE_TYPE
-                        machine type for the cluster nodes
+                        machine type for the instance nodes
   --storage-iops STORAGE_IOPS
-                        storage IOPs to allocate
+                        storage IOPs to allocate (default: 0)
   --storage-size STORAGE_SIZE
                         storage size in GB
   --storage-type STORAGE_TYPE
-                        storage type for the data database
+                        storage type for the data database (default: gp2)
 ```
 
 # Example Output
 ```json
-./pgacloud.py --debug rds get-vpcs
-[11:24:57]: Retrieving VPC information...
+./pgacloud.py --debug azure --resource-group dave-test create-instance --name dave-test2 --db-password foobar%123
+Connected to pydev debugger (build 203.7148.72)
+[13:35:55]: Creating resource group with name: dave-test...
+[13:35:57]: Creating Azure instance: dave-test2...
+[13:39:43]: Adding ingress rule for: 10.0.0.242/32...
 {
-    "vpcs": [
-        {
-            "CidrBlock": "172.31.0.0/16",
-            "DhcpOptionsId": "dopt-a6626abd",
-            "State": "available",
-            "VpcId": "vpc-6473745e",
-            "OwnerId": "869956591405",
-            "InstanceTenancy": "default",
-            "CidrBlockAssociationSet": [
-                {
-                    "AssociationId": "vpc-cidr-assoc-cb184ba7",
-                    "CidrBlock": "172.31.0.0/16",
-                    "CidrBlockState": {
-                        "State": "associated"
-                    }
-                }
-            ],
-            "IsDefault": true
-        }
-    ]
+    "Id": "/subscriptions/abc12345-abcd-7890-1234-abcdef123456/resourceGroups/dave-test/providers/Microsoft.DBforPostgreSQL/servers/dave-test2",
+    "ResourceGroupId": "dave-test",
+    "FirewallRuleId": "/subscriptions/abc12345-abcd-7890-1234-abcdef123456/resourceGroups/dave-test/providers/Microsoft.DBforPostgreSQL/servers/dave-test2/firewallRules/pgacloud_dave-test2_10-0-0-242_WbI9f2lcMc",
+    "Location": "westeurope",
+    "Hostname": "dave-test2.postgres.database.azure.com",
+    "Port": 5432,
+    "Database": "postgres",
+    "Username": "postgres"
 }
 ```
 
 ```json
-./pgacloud.py rds deploy-cluster --name foo --db-password abc123 --instance-type m3.large --storage-size 10
+./pgacloud.py rds create-instance --name foo --db-password abc123 --instance-type m3.large --storage-size 10
 {
     "error": "An error occurred (InvalidParameterValue) when calling the CreateDBInstance operation: Invalid DB Instance class: m3.large"
 }

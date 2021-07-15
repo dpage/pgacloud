@@ -41,7 +41,7 @@ class RdsProvider(AbsProvider):
 
         # Get the default region
         config = configparser.ConfigParser()
-        config.read('~/.aws/credentials')
+        config.read('~/.aws/config')
 
         self._default_region = config.get('default', 'region',
                                           fallback='us-east-1')
@@ -61,7 +61,8 @@ class RdsProvider(AbsProvider):
                                                 'fall back to us-east-1 if '
                                                 'not present.')
         self.parser.add_argument('--region', default=self._default_region,
-                                 help='name of the AWS region')
+                                 help='name of the AWS region (default: {})'
+                                 .format(self._default_region))
 
         # Create the command sub-parser
         parsers = self.parser.add_subparsers(help='RDS commands',
@@ -118,8 +119,7 @@ class RdsProvider(AbsProvider):
             name = 'pgacloud_{}_{}_{}'.format(args.name,
                                               ip.replace('.', '-'),
                                               get_random_id())
-            debug(args,
-                  'Creating security group with name: {}...'.format(name))
+            debug(args, 'Creating security group: {}...'.format(name))
             response = ec2.create_security_group(
                 Description='Inbound access for {} to RDS instance {}'.format(
                     ip, args.name),
@@ -157,25 +157,6 @@ class RdsProvider(AbsProvider):
         except Exception as e:
             error(args, e)
 
-    def _get_security_group(self, args, security_group):
-        """ Describe a security group """
-        ec2 = self._get_aws_client('ec2', args)
-
-        try:
-            debug(args,
-                  'Retrieving security group configuration for: {}...'.format(
-                      security_group))
-            response = ec2.describe_security_groups(
-                GroupIds=[security_group, ])
-        except Exception as e:
-            try:
-                ec2.delete_security_group(GroupId=security_group)
-            except:
-                pass
-            error(args, e)
-
-        return response['SecurityGroups']
-
     def _create_rds_instance(self, args, security_group):
         """ Create an RDS instance """
         ec2 = self._get_aws_client('ec2', args)
@@ -201,12 +182,16 @@ class RdsProvider(AbsProvider):
 
         except rds.exceptions.DBInstanceAlreadyExistsFault as e:
             try:
+                debug(args, 'Deleting security group: {}...'.
+                      format(security_group))
                 ec2.delete_security_group(GroupId=security_group)
             except:
                 pass
             error(args, 'RDS instance {} already exists.'.format(args.name))
         except Exception as e:
             try:
+                debug(args, 'Deleting security group: {}...'.
+                      format(security_group))
                 ec2.delete_security_group(GroupId=security_group)
             except:
                 pass
@@ -224,8 +209,8 @@ class RdsProvider(AbsProvider):
             if status != 'creating' and status != 'backing-up':
                 running = False
 
-            debug(args, 'Status: {}'.format(status))
-            time.sleep(30)
+            if running:
+                time.sleep(30)
 
         return response['DBInstances']
 
@@ -238,9 +223,16 @@ class RdsProvider(AbsProvider):
 
         security_group = self._create_security_group(args)
         self._add_ingress_rule(args, security_group)
-        data['security_groups'] = self._get_security_group(args,
-                                                           security_group)
-        data['instances'] = self._create_rds_instance(args, security_group)
+        instance = self._create_rds_instance(args, security_group)
+
+        data = {'Id': instance[0]['DBInstanceIdentifier'],
+                'Location': instance[0]['AvailabilityZone'],
+                'SecurityGroupId': security_group,
+                'Hostname': instance[0]['Endpoint']['Address'],
+                'Port': instance[0]['Endpoint']['Port'],
+                'Database': instance[0]['DBName'],
+                'Username': instance[0]['MasterUsername']
+                }
 
         output(data)
 
